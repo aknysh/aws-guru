@@ -6,11 +6,12 @@ import (
 	"fmt"
 )
 
-func CreateScheduledExpression(name, description, cronPattern string, svc *cloudwatchevents.CloudWatchEvents) error {
+func CreateScheduledExpression(name, description, cronPattern, roleArn string, svc *cloudwatchevents.CloudWatchEvents) error {
 	params := &cloudwatchevents.PutRuleInput{
 		Name:               aws.String(name),
 		Description:        aws.String(description),
 		ScheduleExpression: aws.String(fmt.Sprintf("cron(%s)", cronPattern)),
+		RoleArn: 			aws.String(roleArn),
 	}
 	_, err := svc.PutRule(params)
 	return err

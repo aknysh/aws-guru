@@ -7,7 +7,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	awslib "aws-guru/aws"
 	"aws-guru/utils"
-	"strings"
 	"github.com/spf13/cobra"
 	"github.com/pkg/errors"
 )
@@ -18,7 +17,7 @@ var ec2snapshoterCmd = &cobra.Command{
 	Long: `EC2 Snapshoter configures a scheduled expression (Cloudwatch Event) which will take snapshot of your EC2 volumes every X hours.
             `,
 	Run: func(cmd *cobra.Command, args []string) {
-		run(cmd, args)
+		run()
 	},
 }
 
@@ -60,16 +59,32 @@ func prepareCloudWatchEventTargets(region, accountId, stackName string, volumes 
 }
 
 
-func run(cmd *cobra.Command, args []string) {
-	fmt.Printf(strings.Join(args, " "))
-
+func run() {
 	sess := awslib.CreateSession(&region)
+	iamSvc := awslib.CreateIAMContext(sess)
 	ec2Svc := awslib.CreateEC2Context(sess)
 	cloudwatchEventsSvc := cloudwatchevents.New(sess)
 
 	fmt.Println("Listing volumes...")
 
 	volumes, err := awslib.ListVolumes(ec2Svc); if err != nil {
+		utils.ExitWithError(err)
+	}
+
+	fmt.Println("Creating IAM user...")
+
+	snapshoterPolicy := `{
+		  "Version": "2012-10-17",
+		  "Statement": {
+				"Effect": "Allow",
+				"Action": "s3:ListBucket",
+				"Resource": "arn:aws:s3:::example_bucket"
+		  }
+	}`
+
+	roleArn, err := awslib.CreateRoleWithAttachedPolicy("ec2-snapshoter", "/ec2-snapshoter/",
+		snapshoterPolicy, "EC2-Snapshoter", iamSvc)
+	if err != nil {
 		utils.ExitWithError(err)
 	}
 
@@ -81,7 +96,9 @@ func run(cmd *cobra.Command, args []string) {
 
 	fmt.Println("Creating scheduled expression...")
 
-	err = awslib.CreateScheduledExpression(cronName, "", cronPattern, cloudwatchEventsSvc); if err != nil {
+	err = awslib.CreateScheduledExpression(cronName, "EC2-Snapshoter Scheduled Expression",
+		cronPattern, roleArn, cloudwatchEventsSvc)
+	if err != nil {
 		utils.ExitWithError(err)
 	}
 
