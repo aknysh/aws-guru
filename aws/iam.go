@@ -27,9 +27,9 @@ func CreateIAMRole(name, path string, svc *iam.IAM) error {
 }
 
 func CreateIAMPolicy(name, policyDocument string, svc *iam.IAM) (string, error) {
-
+	return "", nil
 }
 
 func AttachPolicyToRole(roleArn, policyName string, svc *iam.IAM) error {
-
+	return nil
 }

@@ -3,14 +3,37 @@ package cmd
 import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"fmt"
-	"os"
 	"github.com/aws/aws-sdk-go/service/cloudwatchevents"
 	"github.com/aws/aws-sdk-go/aws"
-	"errors"
 	awslib "aws-guru/aws"
 	"aws-guru/utils"
+	"strings"
+	"github.com/spf13/cobra"
+	"github.com/pkg/errors"
 )
 
+var ec2snapshoterCmd = &cobra.Command{
+	Use:   "ec2-snapshoter",
+	Short: "Setup automatic EC2 snapshots using Cloudwatch Events",
+	Long: `EC2 Snapshoter configures a scheduled expression (Cloudwatch Event) which will take snapshot of your EC2 volumes every X hours.
+            `,
+	Run: func(cmd *cobra.Command, args []string) {
+		run(cmd, args)
+	},
+}
+
+var cronPattern string
+var cronName string
+var region string
+var accountId string
+
+func init() {
+	ec2snapshoterCmd.Flags().StringVarP(&cronPattern, "cron-pattern", "c", "0 10 * * ? *", "scheduled expression cron pattern (UTC time)")
+	ec2snapshoterCmd.Flags().StringVarP(&cronName, "cron-name", "n", "ec2-snapshoter", "name of the scheduled expression")
+	ec2snapshoterCmd.Flags().StringVarP(&region, "region", "r", "us-east-1", "region where backing up should be setup")
+	ec2snapshoterCmd.Flags().StringVarP(&accountId, "account-id", "i", "", "AWS Account ID")
+	RootCmd.AddCommand(ec2snapshoterCmd)
+}
 
 func getAutomationTargetArnName(region, accountId, stackName string) string {
 	return fmt.Sprintf("arn:aws:automation:%s:%s:action/EBSCreateSnapshot/EBSCreateSnapshot_%s",
@@ -37,21 +60,8 @@ func prepareCloudWatchEventTargets(region, accountId, stackName string, volumes 
 }
 
 
-func main() {
-	cronName := os.Getenv("CRON_NAME"); if cronName == "" {
-		utils.ExitWithError(errors.New("CRON_NAME cannot be null!"))
-	}
-
-	cronPattern := os.Getenv("CRON_PATTERN"); if cronPattern == "" {
-		utils.ExitWithError(errors.New("CRON_PATTERN cannot be null!"))
-	}
-	region := os.Getenv("REGION"); if region == "" {
-		utils.ExitWithError(errors.New("REGION cannot be null!"))
-	}
-
-	accountId := os.Getenv("ACCOUNT_ID"); if accountId == "" {
-		utils.ExitWithError(errors.New("ACCOUNT_ID cannot be null!"))
-	}
+func run(cmd *cobra.Command, args []string) {
+	fmt.Printf(strings.Join(args, " "))
 
 	sess := awslib.CreateSession(&region)
 	ec2Svc := awslib.CreateEC2Context(sess)
@@ -61,6 +71,12 @@ func main() {
 
 	volumes, err := awslib.ListVolumes(ec2Svc); if err != nil {
 		utils.ExitWithError(err)
+	}
+
+	fmt.Printf("Found %d volumes to backup.\n", len(volumes))
+
+	if len(volumes) == 0 {
+		utils.ExitWithError(errors.New("Couldn't find volumes to backup"))
 	}
 
 	fmt.Println("Creating scheduled expression...")

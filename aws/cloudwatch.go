@@ -3,13 +3,14 @@ package aws
 import (
 	"github.com/aws/aws-sdk-go/service/cloudwatchevents"
 	"github.com/aws/aws-sdk-go/aws"
+	"fmt"
 )
 
 func CreateScheduledExpression(name, description, cronPattern string, svc *cloudwatchevents.CloudWatchEvents) error {
 	params := &cloudwatchevents.PutRuleInput{
 		Name:               aws.String(name),
 		Description:        aws.String(description),
-		ScheduleExpression: aws.String(cronPattern),
+		ScheduleExpression: aws.String(fmt.Sprintf("cron(%s)", cronPattern)),
 	}
 	_, err := svc.PutRule(params)
 	return err
