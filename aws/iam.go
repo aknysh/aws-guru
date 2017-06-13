@@ -25,9 +25,9 @@ func CreateIAMRole(name, path string, svc *iam.IAM) (string, error) {
 	}`
 
 	params := &iam.CreateRoleInput{
-	AssumeRolePolicyDocument: aws.String(assumeRolePolicyDocument),
-	RoleName:                 aws.String(name),
-	Path:                     aws.String(path),
+		AssumeRolePolicyDocument: aws.String(assumeRolePolicyDocument),
+		RoleName:                 aws.String(name),
+		Path:                     aws.String(path),
 	}
 	output, err := svc.CreateRole(params)
 	return *output.Role.Arn, err
