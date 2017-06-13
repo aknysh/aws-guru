@@ -12,13 +12,13 @@ func CreateIAMContext (sess *session.Session) *iam.IAM {
 }
 
 
-func CreateIAMRole(name, path string, svc *iam.IAM) (string, error) {
+func CreateIAMRole(name, path string, svc *iam.IAM) (*iam.CreateRoleOutput, error) {
 	assumeRolePolicyDocument := `{
 		"Version" : "2012-10-17",
 		"Statement": [ {
 			"Effect": "Allow",
 			"Principal": {
-			"Service": [ "ec2.amazonaws.com" ]
+			"Service": [ "events.amazonaws.com" ]
 		},
 		"Action": [ "sts:AssumeRole" ]
 		} ]
@@ -29,19 +29,17 @@ func CreateIAMRole(name, path string, svc *iam.IAM) (string, error) {
 		RoleName:                 aws.String(name),
 		Path:                     aws.String(path),
 	}
-	output, err := svc.CreateRole(params)
-	return *output.Role.Arn, err
+	return svc.CreateRole(params)
 }
 
-func CreateIAMPolicy(name, policyDocument, description, path string, svc *iam.IAM) (string, error) {
+func CreateIAMPolicy(name, policyDocument, description, path string, svc *iam.IAM) (*iam.CreatePolicyOutput, error) {
 	params := &iam.CreatePolicyInput{
 		PolicyDocument: aws.String(policyDocument),
 		PolicyName:     aws.String(name),
 		Description:    aws.String(description),
 		Path:           aws.String(path),
 	}
-	output, err := svc.CreatePolicy(params)
-	return *output.Policy.Arn, err
+	return svc.CreatePolicy(params)
 }
 
 func AttachPolicyToRole(policyArn, roleName string, svc *iam.IAM) error {
@@ -67,5 +65,5 @@ func CreateRoleWithAttachedPolicy(name, path, policyDocument, description string
 		return "", err
 	}
 
-	return roleArn, AttachPolicyToRole(policyArn, roleName, svc)
+	return *roleArn.Role.Arn, AttachPolicyToRole(*policyArn.Policy.Arn, roleName, svc)
 }
