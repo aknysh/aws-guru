@@ -8,7 +8,6 @@ var disasterRecoveryCmd = &cobra.Command{
 	Long: `Provisions EC2 instance and RDS instance basing on last snapshot provided.`,
 
 	Run: func(cmd *cobra.Command, args []string) {
-		run()
 	},
 }
 

@@ -8,7 +8,6 @@ var s3CloudfrontReportCmd = &cobra.Command{
 	Long: `List S3 buckets with connected Cloudfront distributions sorted by size.`,
 
 	Run: func(cmd *cobra.Command, args []string) {
-		run()
 	},
 }
 

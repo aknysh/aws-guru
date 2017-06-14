@@ -8,7 +8,6 @@ var iamAimLinkerCmd = &cobra.Command{
 	Long: `Links account to AWS-IAM-Manager`,
 
 	Run: func(cmd *cobra.Command, args []string) {
-		run()
 	},
 }
 

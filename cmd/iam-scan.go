@@ -8,7 +8,6 @@ var iamScanCmd = &cobra.Command{
 	Long: `Lists all IAM users with associated rules, detects too wide permissions and unused accounts/roles/policies`,
 
 	Run: func(cmd *cobra.Command, args []string) {
-		run()
 	},
 }
 
