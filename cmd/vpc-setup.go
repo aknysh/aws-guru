@@ -47,13 +47,41 @@ func vpcSetupRun() {
 
 	fmt.Println("Creating public subnet...")
 
-	_, err = awslib.CreateSubnet(publicSubnetCidr, *vpcResult.Vpc.VpcId, *vpcSvc); if err != nil {
+	publicSubnetResult, err := awslib.CreateSubnet(publicSubnetCidr, *vpcResult.Vpc.VpcId, *vpcSvc); if err != nil {
 		utils.ExitWithError(err)
 	}
 
 	fmt.Println("Creating Internet Gateway...")
 
-	_, err = awslib.CreateInternetGateway(*vpcSvc); if err != nil {
+	ipgwResult, err := awslib.CreateInternetGateway(*vpcSvc); if err != nil {
+		utils.ExitWithError(err)
+	}
+
+	fmt.Println("Attaching Internet Gateway...")
+
+	err = awslib.AttachInternetGatewayToVPC(*vpcResult.Vpc.VpcId, *ipgwResult.InternetGateway.InternetGatewayId,
+		*vpcSvc)
+	if err != nil {
+		utils.ExitWithError(err)
+	}
+
+	fmt.Println("Creating Route Table...")
+
+	routeTableResult, err := awslib.CreateRouteTable(*vpcResult.Vpc.VpcId, *vpcSvc); if err != nil {
+		utils.ExitWithError(err)
+	}
+
+	fmt.Println("Creating Route...")
+
+	err = awslib.CreateRoute("0.0.0.0/0", *ipgwResult.InternetGateway.InternetGatewayId,
+		*routeTableResult.RouteTable.RouteTableId, *vpcSvc); if err != nil {
+		utils.ExitWithError(err)
+	}
+
+	fmt.Println("Attaching Route Table to Subnet...")
+
+	err = awslib.AttachRouteTableToSubnet(*routeTableResult.RouteTable.RouteTableId,
+		*publicSubnetResult.Subnet.SubnetId, *vpcSvc); if err != nil {
 		utils.ExitWithError(err)
 	}
 
