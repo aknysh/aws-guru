@@ -11,7 +11,6 @@ func CreateIAMContext (sess *session.Session) *iam.IAM {
 	return iam.New(sess)
 }
 
-
 func CreateIAMRole(name, path string, svc *iam.IAM) (*iam.CreateRoleOutput, error) {
 	assumeRolePolicyDocument := `{
 		"Version" : "2012-10-17",

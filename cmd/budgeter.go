@@ -8,7 +8,6 @@ var budgeterCmd = &cobra.Command{
 	Long: `Creates budgets for EC2, RDS, S3 & Cloudfront usage.`,
 
 	Run: func(cmd *cobra.Command, args []string) {
-		run()
 	},
 }
 

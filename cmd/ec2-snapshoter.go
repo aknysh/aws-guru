@@ -16,7 +16,7 @@ var ec2snapshoterCmd = &cobra.Command{
 	Short: "Setup automatic EC2 snapshots using Cloudwatch Events",
 	Long: `EC2 Snapshoter configures a scheduled expression (Cloudwatch Event) which will take snapshot of your EC2 volumes every X hours.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		run()
+		ec2SnapshoterRun()
 	},
 }
 
@@ -61,7 +61,7 @@ func prepareCloudWatchEventTargets(region, accountId, stackName string, volumes 
 }
 
 
-func run() {
+func ec2SnapshoterRun() {
 	sess := awslib.CreateSession(&region)
 	iamSvc := awslib.CreateIAMContext(sess)
 	ec2Svc := awslib.CreateEC2Context(sess)
