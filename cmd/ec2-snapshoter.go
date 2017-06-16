@@ -22,14 +22,12 @@ var ec2snapshoterCmd = &cobra.Command{
 
 var cronPattern string
 var cronName string
-var region string
 var accountId string
 var reattachOnly bool
 
 func init() {
 	ec2snapshoterCmd.Flags().StringVarP(&cronPattern, "cron-pattern", "c", "0 10 * * ? *", "scheduled expression cron pattern (UTC time)")
 	ec2snapshoterCmd.Flags().StringVarP(&cronName, "cron-name", "n", "ec2-snapshoter", "name of the scheduled expression")
-	ec2snapshoterCmd.Flags().StringVarP(&region, "region", "r", "us-east-1", "region where backing up should be setup")
 	ec2snapshoterCmd.Flags().StringVarP(&accountId, "account-id", "i", "", "AWS Account ID")
 	ec2snapshoterCmd.Flags().BoolVarP(&reattachOnly, "reattach-only", "a", false, `Only attaches volumes to existing
 Rule without creating one and its IAM Role. Applicable only if ec2-snapshoter is already setup on the account but you need to attach more volumes`)

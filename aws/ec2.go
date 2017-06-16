@@ -14,3 +14,9 @@ func ListVolumes(svc *ec2.EC2) ([]*ec2.Volume, error) {
 	resp, err := svc.DescribeVolumes(params)
 	return resp.Volumes, err
 }
+
+func DescribeReservations(svc *ec2.EC2) ([]*ec2.Reservation, error) {
+	params := &ec2.DescribeInstancesInput{}
+	resp, err := svc.DescribeInstances(params)
+	return resp.Reservations, err
+}

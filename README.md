@@ -29,8 +29,8 @@ Every script should follow single responsibility principle and should be a separ
  iam-repair | Fixes issues found by `iam-scan` | M | To do
  iam-aim-linker | Links account to AWS-IAM-Manager | P | To do
  iam-setup | Provides “backdoor” IAM user with admin access for devops, enforces “password policy”, deletes root access keys, etc | P | To do
- ec2-scan | Lists all EC2 instances with associated security group, detects anomalies e.g. too wide access to instances or lack of termination protection | M | To do
- vpc-setup | Provisions VPC, Security Groups and subnets suitable for future development | P | In progress
+ ec2-scan | Lists all EC2 instances with associated security group, detects anomalies e.g. too wide access to instances or lack of termination protection | M | In progress
+ vpc-setup | Provisions VPC, Security Groups and subnets suitable for future development | P | Done
  budgeter | Creates budgets for EC2, RDS, S3 & Cloudfront usage. | P | To do
  disaster-recovery | Provisions EC2 instance and RDS instance basing on last snapshot provided | M | To do
 

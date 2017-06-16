@@ -17,11 +17,14 @@ var RootCmd = &cobra.Command{
 	Long: `AWS-guru is a CLI that empowers devops in provisioning and maintaining AWS accounts by automating their work.`,
 }
 
+var region string
 
 func init() {
 	cobra.OnInitialize(initConfig)
 
 	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.aws-guru.yaml)")
+	RootCmd.Flags().StringVarP(&region, "region", "r", "us-east-1", "region where backing up should be setup")
+
 
 	viper.SetDefault("author", "Rafał Wiliński <rafal.wilinski@netguru.co>")
 	viper.SetDefault("license", "MIT")
