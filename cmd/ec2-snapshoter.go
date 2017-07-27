@@ -20,12 +20,6 @@ var ec2snapshoterCmd = &cobra.Command{
 	},
 }
 
-var cronPattern string
-var cronName string
-var region string
-var accountId string
-var reattachOnly bool
-
 func init() {
 	ec2snapshoterCmd.Flags().StringVarP(&cronPattern, "cron-pattern", "c", "0 10 * * ? *", "scheduled expression cron pattern (UTC time)")
 	ec2snapshoterCmd.Flags().StringVarP(&cronName, "cron-name", "n", "ec2-snapshoter", "name of the scheduled expression")

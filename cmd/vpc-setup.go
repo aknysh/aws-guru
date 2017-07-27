@@ -17,10 +17,6 @@ var vpcSetupCmd = &cobra.Command{
 	},
 }
 
-var vpcCidr string
-var privateSubnetCidr string
-var publicSubnetCidr string
-
 func init() {
 	vpcSetupCmd.Flags().StringVarP(&vpcCidr, "vpc-cidr", "v", "10.0.0.0/16", "VPC CIDR")
 	vpcSetupCmd.Flags().StringVarP(&privateSubnetCidr, "private-cidr", "r", "10.0.0.0/24", "Private Subnet CIDR")
