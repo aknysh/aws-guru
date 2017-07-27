@@ -1,8 +1,8 @@
 package main
 
 import (
-	"aws-guru/cmd"
 	"fmt"
+	"netguru/aws-guru/cmd"
 	"os"
 )
 

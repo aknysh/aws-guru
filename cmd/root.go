@@ -9,14 +9,11 @@ import (
 	"github.com/spf13/viper"
 )
 
-var cfgFile string
-
 var RootCmd = &cobra.Command{
 	Use:   "aws-guru",
 	Short: "Set of scripts for AWS Accounts provisioning and maintenance",
-	Long: `AWS-guru is a CLI that empowers devops in provisioning and maintaining AWS accounts by automating their work.`,
+	Long:  `AWS-guru is a CLI that empowers devops in provisioning and maintaining AWS accounts by automating their work.`,
 }
-
 
 func init() {
 	cobra.OnInitialize(initConfig)

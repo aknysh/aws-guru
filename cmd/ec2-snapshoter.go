@@ -1,30 +1,24 @@
 package cmd
 
 import (
-	"github.com/aws/aws-sdk-go/service/ec2"
 	"fmt"
-	"github.com/aws/aws-sdk-go/service/cloudwatchevents"
 	"github.com/aws/aws-sdk-go/aws"
-	awslib "aws-guru/aws"
-	"aws-guru/utils"
-	"github.com/spf13/cobra"
+	"github.com/aws/aws-sdk-go/service/cloudwatchevents"
+	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/pkg/errors"
+	"github.com/spf13/cobra"
+	awslib "netguru/aws-guru/aws"
+	"netguru/aws-guru/utils"
 )
 
 var ec2snapshoterCmd = &cobra.Command{
 	Use:   "ec2-snapshoter",
 	Short: "Setup automatic EC2 snapshots using Cloudwatch Events",
-	Long: `EC2 Snapshoter configures a scheduled expression (Cloudwatch Event) which will take snapshot of your EC2 volumes every X hours.`,
+	Long:  `EC2 Snapshoter configures a scheduled expression (Cloudwatch Event) which will take snapshot of your EC2 volumes every X hours.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		ec2SnapshoterRun()
 	},
 }
-
-var cronPattern string
-var cronName string
-var region string
-var accountId string
-var reattachOnly bool
 
 func init() {
 	ec2snapshoterCmd.Flags().StringVarP(&cronPattern, "cron-pattern", "c", "0 10 * * ? *", "scheduled expression cron pattern (UTC time)")
@@ -51,15 +45,14 @@ func prepareCloudWatchEventTargets(region, accountId, stackName string, volumes 
 
 	for i, volume := range volumes {
 		targets[i] = &cloudwatchevents.Target{
-			Arn: aws.String(getAutomationTargetArnName(region, accountId, stackName)),
-			Id:  aws.String(fmt.Sprintf("id_%d", i)),
+			Arn:   aws.String(getAutomationTargetArnName(region, accountId, stackName)),
+			Id:    aws.String(fmt.Sprintf("id_%d", i)),
 			Input: aws.String(getEC2VolumeInputArnName(region, accountId, *volume.VolumeId)),
 		}
 	}
 
 	return targets
 }
-
 
 func ec2SnapshoterRun() {
 	sess := awslib.CreateSession(&region)
@@ -69,7 +62,8 @@ func ec2SnapshoterRun() {
 
 	fmt.Println("Listing volumes...")
 
-	volumes, err := awslib.ListVolumes(ec2Svc); if err != nil {
+	volumes, err := awslib.ListVolumes(ec2Svc)
+	if err != nil {
 		utils.ExitWithError(err)
 	}
 
@@ -112,7 +106,8 @@ func ec2SnapshoterRun() {
 		cronName,
 		prepareCloudWatchEventTargets(region, accountId, "stack", volumes),
 		cloudwatchEventsSvc,
-	); if err != nil {
+	)
+	if err != nil {
 		utils.ExitWithError(err)
 	}
 

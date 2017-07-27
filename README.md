@@ -23,7 +23,7 @@ Every script should follow single responsibility principle and should be a separ
 
  Script | Description | Maintenance or Provision | Implementation status
  --- | --- | --- | ---
- s3-cloudfront-report | List S3 buckets with connected Cloudfront distributions sorted by size. | M | To do
+ s3-cloudfront-report | List S3 buckets with connected Cloudfront distributions sorted by size. | M | Done
  ec2-snapshoter | Sets up CloudWatch scheduled expression to take snaphot of all ec2 volumes every 24h | M/P | Done
  iam-scan | Lists all IAM users with associated rules, detects too wide permissions and unused accounts/roles/policies | M | To do
  iam-repair | Fixes issues found by `iam-scan` | M | To do
@@ -34,3 +34,8 @@ Every script should follow single responsibility principle and should be a separ
  budgeter | Creates budgets for EC2, RDS, S3 & Cloudfront usage. | P | To do
  disaster-recovery | Provisions EC2 instance and RDS instance basing on last snapshot provided | M | To do
 
+### Development
+
+- Clone this repository to `$GOPATH/src/netguru/aws-guru`
+- Run `go get`
+- Build & Run the app `go run main.go [arg]`

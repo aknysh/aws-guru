@@ -2,24 +2,20 @@ package cmd
 
 import "github.com/spf13/cobra"
 import (
-	awslib "aws-guru/aws"
-	"aws-guru/utils"
 	"fmt"
+	awslib "netguru/aws-guru/aws"
+	"netguru/aws-guru/utils"
 )
 
 var vpcSetupCmd = &cobra.Command{
 	Use:   "vpc-setup",
 	Short: "Provisions VPC and Subnets suitable for future development",
-	Long: `Provisions VPC and Subnets suitable for future development`,
+	Long:  `Provisions VPC and Subnets suitable for future development`,
 
 	Run: func(cmd *cobra.Command, args []string) {
 		vpcSetupRun()
 	},
 }
-
-var vpcCidr string
-var privateSubnetCidr string
-var publicSubnetCidr string
 
 func init() {
 	vpcSetupCmd.Flags().StringVarP(&vpcCidr, "vpc-cidr", "v", "10.0.0.0/16", "VPC CIDR")
@@ -35,25 +31,29 @@ func vpcSetupRun() {
 
 	fmt.Println("Creating VPC...")
 
-	vpcResult, err := awslib.CreateVPC(vpcCidr, *vpcSvc); if err != nil {
+	vpcResult, err := awslib.CreateVPC(vpcCidr, *vpcSvc)
+	if err != nil {
 		utils.ExitWithError(err)
 	}
 
 	fmt.Println("Creating private subnet...")
 
-	_, err = awslib.CreateSubnet(privateSubnetCidr, *vpcResult.Vpc.VpcId, *vpcSvc); if err != nil {
+	_, err = awslib.CreateSubnet(privateSubnetCidr, *vpcResult.Vpc.VpcId, *vpcSvc)
+	if err != nil {
 		utils.ExitWithError(err)
 	}
 
 	fmt.Println("Creating public subnet...")
 
-	publicSubnetResult, err := awslib.CreateSubnet(publicSubnetCidr, *vpcResult.Vpc.VpcId, *vpcSvc); if err != nil {
+	publicSubnetResult, err := awslib.CreateSubnet(publicSubnetCidr, *vpcResult.Vpc.VpcId, *vpcSvc)
+	if err != nil {
 		utils.ExitWithError(err)
 	}
 
 	fmt.Println("Creating Internet Gateway...")
 
-	ipgwResult, err := awslib.CreateInternetGateway(*vpcSvc); if err != nil {
+	ipgwResult, err := awslib.CreateInternetGateway(*vpcSvc)
+	if err != nil {
 		utils.ExitWithError(err)
 	}
 
@@ -67,21 +67,24 @@ func vpcSetupRun() {
 
 	fmt.Println("Creating Route Table...")
 
-	routeTableResult, err := awslib.CreateRouteTable(*vpcResult.Vpc.VpcId, *vpcSvc); if err != nil {
+	routeTableResult, err := awslib.CreateRouteTable(*vpcResult.Vpc.VpcId, *vpcSvc)
+	if err != nil {
 		utils.ExitWithError(err)
 	}
 
 	fmt.Println("Creating Route...")
 
 	err = awslib.CreateRoute("0.0.0.0/0", *ipgwResult.InternetGateway.InternetGatewayId,
-		*routeTableResult.RouteTable.RouteTableId, *vpcSvc); if err != nil {
+		*routeTableResult.RouteTable.RouteTableId, *vpcSvc)
+	if err != nil {
 		utils.ExitWithError(err)
 	}
 
 	fmt.Println("Attaching Route Table to Subnet...")
 
 	err = awslib.AttachRouteTableToSubnet(*routeTableResult.RouteTable.RouteTableId,
-		*publicSubnetResult.Subnet.SubnetId, *vpcSvc); if err != nil {
+		*publicSubnetResult.Subnet.SubnetId, *vpcSvc)
+	if err != nil {
 		utils.ExitWithError(err)
 	}
 
