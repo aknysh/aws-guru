@@ -1,4 +1,5 @@
 .idea
 .idea/
+vendor/
 main
 aws-guru

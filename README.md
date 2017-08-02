@@ -37,5 +37,5 @@ Every script should follow single responsibility principle and should be a separ
 ### Development
 
 - Clone this repository to `$GOPATH/src/netguru/aws-guru`
-- Run `go get`
+- Run `dep ensure` to download all the dependencies. If you don't have `dep` you can get it here: https://github.com/golang/dep
 - Build & Run the app `go run main.go [arg]`
