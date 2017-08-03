@@ -12,7 +12,7 @@ func CreateIAMContext(sess *session.Session) *iam.IAM {
 }
 
 func CreateIAMRole(name, path string, svc *iam.IAM) (*iam.CreateRoleOutput, error) {
-	assumeRolePolicyDocument := `{
+	defaultAssumeRolePolicyDocument := `{
 		"Version" : "2012-10-17",
 		"Statement": [ {
 			"Effect": "Allow",
@@ -23,7 +23,7 @@ func CreateIAMRole(name, path string, svc *iam.IAM) (*iam.CreateRoleOutput, erro
 		} ]
 	}`
 
-	return CreateIAMRoleDetailed(name, path, "", assumeRolePolicyDocument, svc)
+	return CreateIAMRoleDetailed(name, path, "", defaultAssumeRolePolicyDocument, svc)
 }
 
 func CreateIAMRoleDetailed(name, path, description, assumeRolePolicy string, svc *iam.IAM) (*iam.CreateRoleOutput, error) {
