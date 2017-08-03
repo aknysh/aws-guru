@@ -1,13 +1,13 @@
 package aws
 
 import (
-	"github.com/aws/aws-sdk-go/service/iam"
-	"github.com/aws/aws-sdk-go/aws"
 	"fmt"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/iam"
 )
 
-func CreateIAMContext (sess *session.Session) *iam.IAM {
+func CreateIAMContext(sess *session.Session) *iam.IAM {
 	return iam.New(sess)
 }
 
@@ -29,7 +29,7 @@ func CreateIAMRole(name, path string, svc *iam.IAM) (*iam.CreateRoleOutput, erro
 func CreateIAMRoleDetailed(name, path, description, assumeRolePolicy string, svc *iam.IAM) (*iam.CreateRoleOutput, error) {
 	params := &iam.CreateRoleInput{
 		AssumeRolePolicyDocument: aws.String(assumeRolePolicy),
-		Description:			  aws.String(description),
+		Description:              aws.String(description),
 		RoleName:                 aws.String(name),
 		Path:                     aws.String(path),
 	}

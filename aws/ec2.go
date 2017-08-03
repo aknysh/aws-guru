@@ -1,11 +1,11 @@
 package aws
 
 import (
-	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
-func CreateEC2Context (sess *session.Session) *ec2.EC2 {
+func CreateEC2Context(sess *session.Session) *ec2.EC2 {
 	return ec2.New(sess)
 }
 
