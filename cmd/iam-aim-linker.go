@@ -18,6 +18,11 @@ var iamAimLinkerCmd = &cobra.Command{
 	},
 }
 
+type AccountRecord struct {
+	account_name string
+	RoleArn      string
+}
+
 func init() {
 	s3CloudfrontReportCmd.Flags().StringVarP(&path, "path", "p", "/", "Slave account name")
 	s3CloudfrontReportCmd.Flags().StringVarP(&slaveName, "slaveName", "n", "", "Slave account name")
@@ -56,7 +61,6 @@ func getCrossAccountPolicyDocument(roleArn string) string {
 	return fmt.Sprintf(crossAccountPolicyDocument, roleArn)
 }
 
-
 func iamLinkerRun() {
 	if slaveProfile == "" {
 		utils.ExitWithError(errors.New("--slaveProfile cannot be undefined!"))
@@ -81,10 +85,11 @@ func iamLinkerRun() {
 
 	slaveIamSvc := awslib.CreateIAMContext(slaveSess)
 	masterIamSvc := awslib.CreateIAMContext(masterSess)
+	masterDynamoSvc := awslib.CreateDynamoDBContext(masterSess)
 
 	roleName := "AIM_FederationRole"
 
-	_, err := awslib.CreateIAMRoleDetailed(roleName, path, "Netguru's role for Cross Account access",
+	role, err := awslib.CreateIAMRoleDetailed(roleName, path, "Netguru's role for Cross Account access",
 		getTrustRelationshipPolicy(accountId), slaveIamSvc)
 	if err != nil {
 		utils.ExitWithError(err)
@@ -101,11 +106,15 @@ func iamLinkerRun() {
 		utils.ExitWithError(err)
 	}
 
-	policy, err = awslib.CreateIAMPolicy(fmt.Sprintf("AIM_%s_AssumeRolePolicy"), getCrossAccountPolicyDocument(*role.Policy.Arn),
+	policy, err = awslib.CreateIAMPolicy(fmt.Sprintf("AIM_%s_AssumeRolePolicy", slaveName), getCrossAccountPolicyDocument(*role.Role.Arn),
 		"Policy allowing AWS resource to assume role of other AWS Account Role", "/", masterIamSvc)
 	if err != nil {
 		utils.ExitWithError(err)
 	}
 
+	awslib.PutItem("aim_roles", AccountRecord{
+		account_name: slaveName,
+		RoleArn:      *role.Role.Arn,
+	}, masterDynamoSvc)
 
 }
